@@ -1,3 +1,4 @@
+
 import axios from 'axios'
 import dayjs from 'dayjs'
 import { JSDOM } from 'jsdom'
@@ -100,74 +101,6 @@ export const getWeatherIcon = (weather) => {
  * @param {*} city 城市
  */
 export const getWeather = async (province, city) => {
-  if (config.SWITCH && config.SWITCH.weather === false) {
-    return {}
-  }
-
-  // 读取缓存
-  if (RUN_TIME_STORAGE[`${province}_${city}`]) {
-    console.log(`获取了相同的数据，读取缓存 >>> ${province}_${city}`)
-    return RUN_TIME_STORAGE[`${province}_${city}`]
-  }
-
-  const cityInfo = getWeatherCityInfo(province, city)
-  if (!cityInfo) {
-    console.error('配置文件中找不到相应的省份或城市')
-    return {}
-  }
-  const url = `http://t.weather.itboy.net/api/weather/city/${cityInfo.city_code}`
-
-  const res = await axios.get(url, {
-    headers: {
-      'Content-Type': 'application/json',
-    },
-  }).catch((err) => err)
-
-  if (res.status === 200 && res.data && res.data.status === 200) {
-    const commonInfo = res.data.data
-    const info = commonInfo && commonInfo.forecast && commonInfo.forecast[0]
-    if (!info) {
-      console.error('天气情况: 找不到天气信息, 获取失败')
-      return {}
-    }
-
-    const result = {
-      // 湿度
-      shidu: commonInfo.shidu,
-      // PM2.5
-      pm25: commonInfo.pm25,
-      // PM1.0
-      pm10: commonInfo.pm10,
-      // 空气质量
-      quality: commonInfo.quality,
-      // 预防感冒提醒
-      ganmao: commonInfo.ganmao,
-      // 日出时间
-      sunrise: info.sunrise,
-      // 日落时间
-      sunset: info.sunset,
-      // 空气质量指数
-      aqi: info.aqi,
-      // 天气情况
-      weather: info.type,
-      // 最高温度
-      maxTemperature: info.high.replace(/^高温\s*/, ''),
-      // 最低温度
-      minTemperature: info.low.replace(/^低温\s*/, ''),
-      // 风向
-      windDirection: info.fx,
-      // 风力等级
-      windScale: info.fl,
-      // 温馨提示
-      notice: info.notice,
-    }
-
-    RUN_TIME_STORAGE[`${province}_${city}`] = cloneDeep(result)
-
-    return result
-  }
-  console.error('天气情况获取失败', res)
-  return {}
 }
 
 /**
@@ -710,22 +643,6 @@ export const getDateDiffList = (customizedDateList) => {
  * @returns
  */
 export const getSlotList = () => {
-  if (Object.prototype.toString.call(config.SLOT_LIST) !== '[object Array]') {
-    return []
-  }
-  const slotList = config.SLOT_LIST
-
-  slotList.forEach((item) => {
-    if (Object.prototype.toString.call(item.contents) === '[object Array]' && item.contents.length > 0) {
-      item.checkout = item.contents[Math.floor(Math.random() * item.contents.length + 1) - 1]
-    } else if (Object.prototype.toString.call(item.contents) === '[object String]') {
-      item.checkout = item.contents
-    } else {
-      item.checkout = ''
-    }
-  })
-
-  return slotList
 }
 
 /**
@@ -816,7 +733,7 @@ export const getTianApiNetworkHot = async (type = 'default') => {
  */
 // istanbul ignore next
 export const getAggregatedData = async () => {
-  const weekList = ['星期日', '星期一', '星期二', '星期三', '星期四', '星期五', '星期六']
+  // const weekList = ['星期日', '星期一', '星期二', '星期三', '星期四', '星期五', '星期六']
   // 获取金山词霸每日一句
   const {
     noteEn = DEFAULT_OUTPUT.noteEn,
@@ -824,30 +741,30 @@ export const getAggregatedData = async () => {
     noteCh = DEFAULT_OUTPUT.noteCh,
     wxNoteCh = ''
   } = await getCIBA()
-  // 获取下一休息日
-  const {holidaytts, wxHolidaytts} = await getHolidaytts()
-  // 获取每日一言
-  const {
-    hitokoto: oneTalk = DEFAULT_OUTPUT.oneTalk,
-    wx_one_talk: wxOneTalk = '',
-    from: talkFrom = DEFAULT_OUTPUT.talkFrom,
-  } = await getOneTalk(config.LITERARY_PREFERENCE)
-  // 获取土味情话
-  const {earthyLoveWords, wxEarthyLoveWords} = await getEarthyLoveWords()
-  // 获取朋友圈文案
-  const {momentCopyrighting, wxMomentCopyrighting} = await getMomentCopyrighting()
-  // 获取毒鸡汤
-  const {poisonChickenSoup, wxPoisonChickenSoup} = await getPoisonChickenSoup()
-  // 获取古诗古文 poetry
-  const {
-    dynasty: poetryDynasty = DEFAULT_OUTPUT.poetryDynasty,
-    author: poetryAuthor = DEFAULT_OUTPUT.poetryAuthor,
-    title: poetryTitle = DEFAULT_OUTPUT.poetryTitle,
-    content: poetryContent,
-    wxContent: wxPoetryContent
-  } = await getPoetry()
+  // // 获取下一休息日
+  // const {holidaytts, wxHolidaytts} = await getHolidaytts()
+  // // 获取每日一言
+  // const {
+  //   hitokoto: oneTalk = DEFAULT_OUTPUT.oneTalk,
+  //   wx_one_talk: wxOneTalk = '',
+  //   from: talkFrom = DEFAULT_OUTPUT.talkFrom,
+  // } = await getOneTalk(config.LITERARY_PREFERENCE)
+  // // 获取土味情话
+  // const {earthyLoveWords, wxEarthyLoveWords} = await getEarthyLoveWords()
+  // // 获取朋友圈文案
+  // const {momentCopyrighting, wxMomentCopyrighting} = await getMomentCopyrighting()
+  // // 获取毒鸡汤
+  // const {poisonChickenSoup, wxPoisonChickenSoup} = await getPoisonChickenSoup()
+  // // 获取古诗古文 poetry
+  // const {
+  //   dynasty: poetryDynasty = DEFAULT_OUTPUT.poetryDynasty,
+  //   author: poetryAuthor = DEFAULT_OUTPUT.poetryAuthor,
+  //   title: poetryTitle = DEFAULT_OUTPUT.poetryTitle,
+  //   content: poetryContent,
+  //   wxContent: wxPoetryContent
+  // } = await getPoetry()
   // 获取插槽中的数据
-  const slotParams = getSlotList().map((item) => ({ name: item.keyword, value: item.checkout, color: getColor() }))
+  // const slotParams = getSlotList().map((item) => ({ name: item.keyword, value: item.checkout, color: getColor() }))
 
   if (Object.prototype.toString.call(config.USERS) !== '[object Array]') {
     console.error('配置文件中找不到USERS数组')
@@ -856,96 +773,97 @@ export const getAggregatedData = async () => {
   const users = config.USERS
   for (const user of users) {
     // 获取每日天气
-    const useProvince = user.province || config.PROVINCE
-    const useCity = user.city || config.CITY
-    const weatherInfo = await getWeather(useProvince, useCity)
-    const weatherMessage = Object.keys(weatherInfo).map((item) => ({
-      name: toLowerLine(item),
-      value: weatherInfo[item] || '获取失败',
-      color: getColor(),
-    }))
+    // const useProvince = user.province || config.PROVINCE
+    // const useCity = user.city || config.CITY
+    // const weatherInfo = await getWeather(useProvince, useCity)
+    // const weatherMessage = Object.keys(weatherInfo).map((item) => ({
+    //   name: toLowerLine(item),
+    //   value: weatherInfo[item] || '获取失败',
+    //   color: getColor(),
+    // }))
 
-    // 统计日列表计算日期差
-    const dateDiffParams = getDateDiffList(user.customizedDateList).map((item) => ({
-      name: item.keyword,
-      value: item.diffDay,
-      color: getColor(),
-    }))
+    // // 统计日列表计算日期差
+    // const dateDiffParams = getDateDiffList(user.customizedDateList).map((item) => ({
+    //   name: item.keyword,
+    //   value: item.diffDay,
+    //   color: getColor(),
+    // }))
 
-    // 获取生日/生日信息
-    const { resMessage: birthdayMessage, wechatTestBirthdayMessage } = getBirthdayMessage(user.festivals)
+    // // 获取生日/生日信息
+    // const { resMessage: birthdayMessage, wechatTestBirthdayMessage } = getBirthdayMessage(user.festivals)
 
-    // 获取星座运势
-    const constellationFortune = await getConstellationFortune(user.horoscopeDate, user.horoscopeDateType)
+    // // 获取星座运势
+    // const constellationFortune = await getConstellationFortune(user.horoscopeDate, user.horoscopeDateType)
 
-    // 获取课表信息
-    const {schedule:courseSchedule, wechatTestCourseSchedule} = getCourseSchedule(user.courseSchedule || config.courseSchedule) || DEFAULT_OUTPUT.courseSchedule
+    // // 获取课表信息
+    // const {schedule:courseSchedule, wechatTestCourseSchedule} = getCourseSchedule(user.courseSchedule || config.courseSchedule) || DEFAULT_OUTPUT.courseSchedule
 
-    // 天行-早晚安
-    const tianApiGreeting = [{
-      name: toLowerLine('tianApiMorningGreeting'),
-      value: await getTianApiMorningGreeting(),
-      color: getColor(),
-    }, {
-      name: toLowerLine('tianApiEveningGreeting'),
-      value: await getTianApiEveningGreeting(),
-      color: getColor(),
-    }].filter((it) => it.value)
+    // // 天行-早晚安
+    // const tianApiGreeting = [{
+    //   name: toLowerLine('tianApiMorningGreeting'),
+    //   value: await getTianApiMorningGreeting(),
+    //   color: getColor(),
+    // }, {
+    //   name: toLowerLine('tianApiEveningGreeting'),
+    //   value: await getTianApiEveningGreeting(),
+    //   color: getColor(),
+    // }].filter((it) => it.value)
 
-    // 天行-天气
-    const tianApiWeather = (await getTianApiWeather(user) || []).map((it, index) => Object.keys((it)).filter((weatherKey) => ['province', 'area', 'weatherimg'].indexOf(weatherKey) === -1).map((key) => ({
-      name: toLowerLine(`tianApiWeather_${key}_${index}`),
-      value: it[key],
-      color: getColor(),
-    }))).flat()
+    // // 天行-天气
+    // const tianApiWeather = (await getTianApiWeather(user) || []).map((it, index) => Object.keys((it)).filter((weatherKey) => ['province', 'area', 'weatherimg'].indexOf(weatherKey) === -1).map((key) => ({
+    //   name: toLowerLine(`tianApiWeather_${key}_${index}`),
+    //   value: it[key],
+    //   color: getColor(),
+    // }))).flat()
 
-    // 天行-热榜
-    const tianApiNetworkHot = [{
-      name: toLowerLine('tianApiNetworkHot'),
-      value: await getTianApiNetworkHot(config.TIAN_API && config.TIAN_API.networkHotType),
-      color: getColor(),
-    }]
+    // // 天行-热榜
+    // const tianApiNetworkHot = [{
+    //   name: toLowerLine('tianApiNetworkHot'),
+    //   value: await getTianApiNetworkHot(config.TIAN_API && config.TIAN_API.networkHotType),
+    //   color: getColor(),
+    // }]
     // 集成所需信息
     const wxTemplateParams = [
-      { name: toLowerLine('toName'), value: user.name, color: getColor() },
-      {
-        name: toLowerLine('date'),
-        value: `${selfDayjs().format('YYYY-MM-DD')} ${weekList[selfDayjs().format('d')]}`,
-        color: getColor(),
-      },
-      { name: toLowerLine('province'), value: user.province || config.PROVINCE, color: getColor() },
-      { name: toLowerLine('city'), value: user.city || config.CITY, color: getColor() },
-      { name: toLowerLine('birthdayMessage'), value: birthdayMessage, color: getColor() },
-      { name: toLowerLine('noteEn'), value: noteEn, color: getColor() },
+      // { name: toLowerLine('toName'), value: user.name, color: getColor() },
+      // {
+      //   name: toLowerLine('date'),
+      //   value: `${selfDayjs().format('YYYY-MM-DD')} ${weekList[selfDayjs().format('d')]}`,
+      //   color: getColor(),
+      // },
+      // { name: toLowerLine('province'), value: user.province || config.PROVINCE, color: getColor() },
+      // { name: toLowerLine('city'), value: user.city || config.CITY, color: getColor() },
+      // { name: toLowerLine('birthdayMessage'), value: birthdayMessage, color: getColor() },
+      // { name: toLowerLine('noteEn'), value: noteEn, color: getColor() },
       { name: toLowerLine('noteCh'), value: noteCh, color: getColor() },
-      { name: toLowerLine('holidaytts'), value: holidaytts, color: getColor() },
-      { name: toLowerLine('oneTalk'), value: oneTalk, color: getColor() },
-      { name: toLowerLine('talkFrom'), value: talkFrom, color: getColor() },
-      { name: toLowerLine('earthyLoveWords'), value: earthyLoveWords, color: getColor() },
-      { name: toLowerLine('momentCopyrighting'), value: momentCopyrighting, color: getColor() },
-      { name: toLowerLine('poisonChickenSoup'), value: poisonChickenSoup, color: getColor() },
-      { name: toLowerLine('poetryContent'), value: poetryContent, color: getColor() },
-      { name: toLowerLine('poetryAuthor'), value: poetryAuthor, color: getColor() },
-      { name: toLowerLine('poetryDynasty'), value: poetryDynasty, color: getColor() },
-      { name: toLowerLine('poetryTitle'), value: poetryTitle, color: getColor() },
-      { name: toLowerLine('courseSchedule'), value: courseSchedule, color: getColor() },
-    ].concat(weatherMessage)
-      .concat(constellationFortune)
-      .concat(dateDiffParams)
-      .concat(slotParams)
-      .concat(tianApiGreeting)
-      .concat(tianApiWeather)
-      .concat(tianApiNetworkHot)
-      .concat(wechatTestBirthdayMessage)
-      .concat(wechatTestCourseSchedule)
-      .concat(wxNoteEn)
-      .concat(wxNoteCh)
-      .concat(wxOneTalk)
-      .concat(wxEarthyLoveWords)
-      .concat(wxMomentCopyrighting)
-      .concat(wxPoisonChickenSoup)
-      .concat(wxPoetryContent)
-      .concat(wxHolidaytts)
+      // { name: toLowerLine('holidaytts'), value: holidaytts, color: getColor() },
+      // { name: toLowerLine('oneTalk'), value: oneTalk, color: getColor() },
+      // { name: toLowerLine('talkFrom'), value: talkFrom, color: getColor() },
+      // { name: toLowerLine('earthyLoveWords'), value: earthyLoveWords, color: getColor() },
+      // { name: toLowerLine('momentCopyrighting'), value: momentCopyrighting, color: getColor() },
+      // { name: toLowerLine('poisonChickenSoup'), value: poisonChickenSoup, color: getColor() },
+      // { name: toLowerLine('poetryContent'), value: poetryContent, color: getColor() },
+      // { name: toLowerLine('poetryAuthor'), value: poetryAuthor, color: getColor() },
+      // { name: toLowerLine('poetryDynasty'), value: poetryDynasty, color: getColor() },
+      // { name: toLowerLine('poetryTitle'), value: poetryTitle, color: getColor() },
+      // { name: toLowerLine('courseSchedule'), value: courseSchedule, color: getColor() },
+    ]
+    // .concat(weatherMessage)
+    //   .concat(constellationFortune)
+    //   .concat(dateDiffParams)
+    //   .concat(slotParams)
+    //   .concat(tianApiGreeting)
+    //   .concat(tianApiWeather)
+    //   .concat(tianApiNetworkHot)
+    //   .concat(wechatTestBirthdayMessage)
+    //   .concat(wechatTestCourseSchedule)
+    //   .concat(wxNoteEn)
+    //   .concat(wxNoteCh)
+    //   .concat(wxOneTalk)
+    //   .concat(wxEarthyLoveWords)
+    //   .concat(wxMomentCopyrighting)
+    //   .concat(wxPoisonChickenSoup)
+    //   .concat(wxPoetryContent)
+    //   .concat(wxHolidaytts)
 
     user.wxTemplateParams = wxTemplateParams
   }
