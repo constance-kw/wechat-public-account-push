@@ -44,14 +44,14 @@ export default async function mainForProd() {
     failPostIds,
   })
 
-  // 发送回执
-  if (config.CALLBACK_TEMPLATE_ID) {
-    console.log('---')
-    console.log('【推送完成提醒】推送开始')
-    await sendMessageReply(config.CALLBACK_USERS, config.CALLBACK_TEMPLATE_ID, callbackTemplateParams, config.USE_PASSAGE)
-    console.log('【推送完成提醒】推送结束')
-    console.log('---')
-  }
+  // // 发送回执
+  // if (config.CALLBACK_TEMPLATE_ID) {
+  //   console.log('---')
+  //   console.log('【推送完成提醒】推送开始')
+  //   await sendMessageReply(config.CALLBACK_USERS, config.CALLBACK_TEMPLATE_ID, callbackTemplateParams, config.USE_PASSAGE)
+  //   console.log('【推送完成提醒】推送结束')
+  //   console.log('---')
+  // }
 
   // 释放运行时临时存储的数据
   Object.keys(RUN_TIME_STORAGE).forEach((o) => {
@@ -60,6 +60,7 @@ export default async function mainForProd() {
 }
 
 const main = () => {
+  console.log('环境---', process.env.APP_MODE )
   if (process.env.APP_MODE === 'params-log') {
     mainForTest()
   } else if (process.env.APP_MODE === 'server') {
