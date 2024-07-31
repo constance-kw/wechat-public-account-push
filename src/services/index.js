@@ -150,6 +150,35 @@ export const getCIBA = async () => {
   return {}
 }
 
+const getExchange = async () => {
+  const url = 'https://www.tanshuapi.com/index/api/apiDebug'
+  const formData = new FormData()
+  formData.append(
+    'request_url',
+    'http://api.tanshuapi.com/api/exchange/v1/index2'
+  )
+  formData.append('method', 'get')
+  formData.append('params', '{"from":"CAD","to":"CNY","money":"1"}')
+  const res = await axios({
+      url,
+      method: 'post',
+      data: formData,
+      headers: {
+        'Content-Type': ' multipart/form-data',
+        cookie: 'PHPSESSID=055e536c3d6d1a0554c239952c553b75',
+        withCredentials: true
+      }
+    })
+    .catch((err) => err)
+
+  if (res.status === 200 && res) {
+    console.log(res.data)
+    return res.data.response ? JSON.parse(res.data.response) : ''
+  }
+  console.error('获取汇率: 发生错误', res)
+  return {}
+}
+
 /**
  * 获取下一休息日tts
  * @returns
@@ -735,12 +764,25 @@ export const getTianApiNetworkHot = async (type = 'default') => {
 export const getAggregatedData = async () => {
   // const weekList = ['星期日', '星期一', '星期二', '星期三', '星期四', '星期五', '星期六']
   // 获取金山词霸每日一句
-  const {
-    noteEn = DEFAULT_OUTPUT.noteEn,
-    wxNoteEn = '',
-    noteCh = DEFAULT_OUTPUT.noteCh,
-    wxNoteCh = ''
-  } = await getCIBA()
+  // const {
+  //   noteEn = DEFAULT_OUTPUT.noteEn,
+  //   wxNoteEn = '',
+  //   noteCh = DEFAULT_OUTPUT.noteCh,
+  //   wxNoteCh = ''
+  // } = await getCIBA()
+  let exchangeTip = ''
+  let exchangeUpdatetime = ''
+  const res = await getExchange()
+  if(res){
+    console.log(res.data)
+    const {from_name, to_name, exchange, money, updatetime} = res.data
+    console.log(`1 ${from_name} ≈ ${money} ${to_name}`)
+    console.log(updatetime)
+    exchangeTip = `1 ${from_name} ≈ ${money} ${to_name}`,
+    exchangeUpdatetime = updatetime
+  }else{
+    throw new Error('获取汇率失败')
+  }
   // // 获取下一休息日
   // const {holidaytts, wxHolidaytts} = await getHolidaytts()
   // // 获取每日一言
@@ -834,7 +876,8 @@ export const getAggregatedData = async () => {
       // { name: toLowerLine('city'), value: user.city || config.CITY, color: getColor() },
       // { name: toLowerLine('birthdayMessage'), value: birthdayMessage, color: getColor() },
       // { name: toLowerLine('noteEn'), value: noteEn, color: getColor() },
-      { name: toLowerLine('noteCh'), value: noteCh, color: getColor() },
+      { name: 'tip', value: exchangeTip, color: getColor() },
+      { name: 'time', value: exchangeUpdatetime, color: getColor() },
       // { name: toLowerLine('holidaytts'), value: holidaytts, color: getColor() },
       // { name: toLowerLine('oneTalk'), value: oneTalk, color: getColor() },
       // { name: toLowerLine('talkFrom'), value: talkFrom, color: getColor() },
