@@ -779,7 +779,7 @@ export const getAggregatedData = async () => {
     const {from_name, to_name, exchange, money, updatetime} = res.data
     console.log(`1 ${from_name} ≈ ${money} ${to_name}`)
     console.log(updatetime)
-    exchangeTip = `1 ${from_name} ≈ ${money} ${to_name}`,
+    exchangeTip = `1 ${from_name} = ${money} ${to_name}`,
     exchangeUpdatetime = updatetime
   }else{
     throw new Error('获取汇率失败')
