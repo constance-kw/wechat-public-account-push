@@ -16,6 +16,7 @@ import {
   sleep,
 } from '../utils/index.js'
 import { selfDayjs, timeZone } from '../utils/set-def-dayjs.js'
+import FormData from 'form-data'
 
 axios.defaults.timeout = 10000
 
